@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * safe-deploy.mjs — Deploy a Safe smart account on Base
+ * agent-treasury-deploy.mjs — Deploy a Safe smart account on Base
  *
  * Creates a 1-of-2 Safe with two owners:
  *   1. Owner's personal wallet (passed via --owner or SAFE_OWNER env var)
@@ -10,9 +10,9 @@
  * Raise to 2 after configuration is complete (Step 4).
  *
  * Usage:
- *   node scripts/safe-deploy.mjs --owner 0xOwnerAddress
- *   node scripts/safe-deploy.mjs --owner 0xOwnerAddress --threshold 2
- *   node scripts/safe-deploy.mjs --owner 0xOwnerAddress --agent 0xAgentAddress --dry-run
+ *   node scripts/agent-treasury-deploy.mjs --owner 0xOwnerAddress
+ *   node scripts/agent-treasury-deploy.mjs --owner 0xOwnerAddress --threshold 2
+ *   node scripts/agent-treasury-deploy.mjs --owner 0xOwnerAddress --agent 0xAgentAddress --dry-run
  *   # --agent bypasses Keychain lookup (dry-run only, for testing on dev machines)
  *
  * After deployment, add SAFE_ADDRESS to ~/morpheus/.env
@@ -157,7 +157,7 @@ async function main() {
 
   if (!humanAddress) {
     log("ERROR: --owner 0xAddress required (owner's personal wallet)");
-    log("Usage: node scripts/safe-deploy.mjs --owner 0xYourAddress");
+    log("Usage: node scripts/agent-treasury-deploy.mjs --owner 0xYourAddress");
     process.exit(1);
   }
 
@@ -346,7 +346,7 @@ async function main() {
     log(`     SAFE_ADDRESS=${safeAddress}`);
     log(`  2. Verify on Basescan:`);
     log(`     https://basescan.org/address/${safeAddress}`);
-    log(`  3. Run safe-configure.mjs to enable AllowanceModule`);
+    log(`  3. Run agent-treasury-configure.mjs to enable AllowanceModule`);
 
   } catch (e) {
     log(`ERROR: Deployment failed: ${e.shortMessage || e.message}`);

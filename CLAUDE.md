@@ -1,4 +1,4 @@
-# safe-treasury
+# safe-agent-treasury
 
 Multi-sig treasury management for autonomous AI agents using Safe Smart Account on Base.
 
@@ -9,19 +9,19 @@ This skill was extracted from `everclaw-fork` (branch `feature/safe-smart-accoun
 ## Architecture
 
 ```
-safe-treasury/
+safe-agent-treasury/
   SKILL.md              # OpenClaw skill manifest (frontmatter + docs)
   README.md             # User-facing summary
   CLAUDE.md             # This file -- project conventions for Claude Code
   package.json          # viem dependency (ESM)
   scripts/
-    safe-deploy.mjs     # Deploy Safe v1.4.1 on Base (ProxyFactory)
-    safe-configure.mjs  # Enable AllowanceModule + set spending limits
-    safe-propose.mjs    # Multi-sig tx proposals via Safe Transaction Service
-    safe-refill.mjs     # Auto-refill hot wallet (launchd daemon)
+    agent-treasury-deploy.mjs     # Deploy Safe v1.4.1 on Base (ProxyFactory)
+    agent-treasury-configure.mjs  # Enable AllowanceModule + set spending limits
+    agent-treasury-propose.mjs    # Multi-sig tx proposals via Safe Transaction Service
+    agent-treasury-refill.mjs     # Auto-refill hot wallet (launchd daemon)
     install.sh          # Install launchd services
   templates/
-    com.safe-treasury.refill.plist   # launchd template (every 6h)
+    com.safe-agent-treasury.refill.plist   # launchd template (every 6h)
   references/
     safe-deployment.md  # Deployment reference docs + contract ABIs
 ```
@@ -56,7 +56,7 @@ All scripts target Safe v1.4.1 canonical deployments on Base (chain ID 8453). Th
 
 ### EIP-712 Safe Transaction Signing
 
-`safe-configure.mjs` and `safe-propose.mjs` compute Safe transaction hashes using EIP-712 typed data. The signature `v` value is adjusted by +4 for `eth_sign` style (Safe's convention for raw hash signatures vs. EIP-191 prefixed messages).
+`agent-treasury-configure.mjs` and `agent-treasury-propose.mjs` compute Safe transaction hashes using EIP-712 typed data. The signature `v` value is adjusted by +4 for `eth_sign` style (Safe's convention for raw hash signatures vs. EIP-191 prefixed messages).
 
 ## Deployment (2026-02-15)
 
@@ -77,10 +77,10 @@ See `references/safe-deployment.md` for full transaction log and lessons learned
 npm install
 
 # Dry-run deploy (no transaction sent)
-node scripts/safe-deploy.mjs --owner 0xAddress --agent 0xAgent --dry-run
+node scripts/agent-treasury-deploy.mjs --owner 0xAddress --agent 0xAgent --dry-run
 
 # Dry-run configure (shows planned transactions)
-node scripts/safe-configure.mjs --dry-run
+node scripts/agent-treasury-configure.mjs --dry-run
 ```
 
 ## Extraction History
@@ -91,7 +91,7 @@ node scripts/safe-configure.mjs --dry-run
 - **Changes from source:**
   - Env vars renamed: `EVERCLAW_*` -> `SAFE_*` (with fallback)
   - `MORPHEUS_DIR` -> `SAFE_DIR` (with fallback)
-  - `com.morpheus.refill` -> `com.safe-treasury.refill`
+  - `com.morpheus.refill` -> `com.safe-agent-treasury.refill`
   - Dropped `@safe-global/safe-modules-deployments` dependency
   - Removed Everclaw-specific framing from docs
   - Added standalone `install.sh` (extracted from everclaw's `install-proxy.sh`)

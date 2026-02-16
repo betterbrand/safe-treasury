@@ -1,13 +1,13 @@
 #!/usr/bin/env node
 /**
- * safe-status.mjs — Read-only dashboard for Safe treasury status
+ * agent-treasury-status.mjs — Read-only dashboard for Safe treasury status
  *
  * Shows Safe overview, balances, daily allowance usage, pending
  * transactions, and refill daemon health. No private key required.
  *
  * Usage:
- *   node scripts/safe-status.mjs
- *   node scripts/safe-status.mjs --json
+ *   node scripts/agent-treasury-status.mjs
+ *   node scripts/agent-treasury-status.mjs --json
  *
  * Required in ~/morpheus/.env:
  *   SAFE_ADDRESS=0x...            Safe wallet address on Base
@@ -347,7 +347,7 @@ async function main() {
   try {
     const launchdStatus = execFileSync(
       "launchctl",
-      ["list", "com.safe-treasury.refill"],
+      ["list", "com.safe-agent-treasury.refill"],
       { encoding: "utf-8", stdio: "pipe" }
     );
     // launchctl list <label> outputs key-value pairs if the job exists
@@ -356,7 +356,7 @@ async function main() {
     const pid = pidMatch ? pidMatch[1] : null;
     const lastExit = statusMatch ? statusMatch[1] : null;
 
-    log(`  Service:          com.safe-treasury.refill`);
+    log(`  Service:          com.safe-agent-treasury.refill`);
     log(`  Status:           loaded${pid ? ` (PID ${pid})` : ""}`);
     log(`  Last exit status: ${lastExit !== null ? lastExit : "unknown"}`);
 
@@ -364,7 +364,7 @@ async function main() {
     result.refillDaemon.pid = pid ? Number(pid) : null;
     result.refillDaemon.lastExitStatus = lastExit !== null ? Number(lastExit) : null;
   } catch {
-    log("  Service:          com.safe-treasury.refill");
+    log("  Service:          com.safe-agent-treasury.refill");
     log("  Status:           not loaded");
 
     result.refillDaemon.loaded = false;

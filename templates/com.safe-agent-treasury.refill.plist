@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
     <key>Label</key>
-    <string>com.safe-treasury.refill</string>
+    <string>com.safe-agent-treasury.refill</string>
     <key>Comment</key>
     <string>Safe wallet auto-refill — pulls MOR/ETH from Safe to hot wallet</string>
     <key>ProgramArguments</key>

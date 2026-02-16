@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * safe-configure.mjs — Enable AllowanceModule on Safe and set spending limits
+ * agent-treasury-configure.mjs — Enable AllowanceModule on Safe and set spending limits
  *
  * Executes four Safe transactions (sequentially):
  *   1. enableModule(AllowanceModule)
@@ -9,12 +9,12 @@
  *   4. setAllowance(agent, ETH, amount, resetInterval) on the AllowanceModule
  *
  * Requires threshold of 1 (agent can execute alone during setup).
- * For threshold 2+, use safe-propose.mjs instead.
+ * For threshold 2+, use agent-treasury-propose.mjs instead.
  *
  * Usage:
- *   node scripts/safe-configure.mjs
- *   node scripts/safe-configure.mjs --mor-allowance 100 --eth-allowance 0.1
- *   node scripts/safe-configure.mjs --dry-run
+ *   node scripts/agent-treasury-configure.mjs
+ *   node scripts/agent-treasury-configure.mjs --mor-allowance 100 --eth-allowance 0.1
+ *   node scripts/agent-treasury-configure.mjs --dry-run
  *
  * Required in ~/morpheus/.env:
  *   SAFE_ADDRESS=0x...
@@ -278,7 +278,7 @@ async function execSafeTx(
 async function main() {
   if (!SAFE_ADDRESS) {
     log("ERROR: SAFE_ADDRESS not set in ~/morpheus/.env");
-    log("Deploy a Safe first with safe-deploy.mjs");
+    log("Deploy a Safe first with agent-treasury-deploy.mjs");
     process.exit(1);
   }
 
@@ -331,7 +331,7 @@ async function main() {
   log(`AllowanceModule enabled: ${moduleEnabled}`);
 
   if (threshold > 1n) {
-    log("ERROR: Threshold is > 1. Use safe-propose.mjs for multi-sig transactions.");
+    log("ERROR: Threshold is > 1. Use agent-treasury-propose.mjs for multi-sig transactions.");
     log("Set threshold to 1 during setup, then raise after configuration.");
     process.exit(1);
   }
@@ -542,7 +542,7 @@ async function main() {
 
   log(`  Module enabled: ${isEnabled}`);
   log("");
-  log("Configuration complete. safe-refill.mjs can now pull funds from this Safe.");
+  log("Configuration complete. agent-treasury-refill.mjs can now pull funds from this Safe.");
 }
 
 main().catch((e) => {

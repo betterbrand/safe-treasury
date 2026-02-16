@@ -1,12 +1,12 @@
 #!/usr/bin/env node
 /**
- * safe-refill.mjs — Auto-refill hot wallet from Safe via AllowanceModule
+ * agent-treasury-refill.mjs — Auto-refill hot wallet from Safe via AllowanceModule
  *
  * Checks hot wallet MOR and ETH balances on Base.
  * If below thresholds, pulls funds from Safe using executeAllowanceTransfer.
  * The hot wallet (delegate) calls the module directly — no signature needed.
  *
- * Runs as a launchd periodic job (com.safe-treasury.refill, every 6 hours).
+ * Runs as a launchd periodic job (com.safe-agent-treasury.refill, every 6 hours).
  *
  * Required in ~/morpheus/.env:
  *   SAFE_ADDRESS=0x...            Safe wallet address on Base

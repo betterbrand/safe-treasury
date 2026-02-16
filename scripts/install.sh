@@ -1,9 +1,9 @@
 #!/bin/bash
-# install.sh — Install safe-treasury refill service with launchd persistence
+# install.sh — Install safe-agent-treasury refill service with launchd persistence
 #
 # Sets up:
 # 1. npm dependencies (viem)
-# 2. safe-refill.mjs copied to ~/morpheus/
+# 2. agent-treasury-refill.mjs copied to ~/morpheus/
 # 3. launchd plist for auto-refill (every 6 hours)
 #
 # Usage: bash scripts/install.sh
@@ -17,7 +17,7 @@ NODE_PATH="${NODE_PATH_OVERRIDE:-$(which node)}"
 LAUNCH_AGENTS="$HOME/Library/LaunchAgents"
 
 echo "==========================================="
-echo "  safe-treasury — Service Installer"
+echo "  safe-agent-treasury — Service Installer"
 echo "==========================================="
 echo ""
 
@@ -34,12 +34,12 @@ else
   exit 1
 fi
 
-# --- 2. Copy safe-refill.mjs ---
-echo "[2/3] Installing safe-refill.mjs..."
+# --- 2. Copy agent-treasury-refill.mjs ---
+echo "[2/3] Installing agent-treasury-refill.mjs..."
 mkdir -p "$SAFE_DIR/data/logs"
 
-cp "$SCRIPT_DIR/safe-refill.mjs" "$SAFE_DIR/safe-refill.mjs"
-echo "   Copied safe-refill.mjs -> $SAFE_DIR/"
+cp "$SCRIPT_DIR/agent-treasury-refill.mjs" "$SAFE_DIR/agent-treasury-refill.mjs"
+echo "   Copied agent-treasury-refill.mjs -> $SAFE_DIR/"
 
 # --- 3. Install launchd plist (macOS only) ---
 if [[ "$(uname)" == "Darwin" ]]; then
@@ -47,19 +47,19 @@ if [[ "$(uname)" == "Darwin" ]]; then
   mkdir -p "$LAUNCH_AGENTS"
 
   # Unload existing service
-  launchctl unload "$LAUNCH_AGENTS/com.safe-treasury.refill.plist" 2>/dev/null || true
+  launchctl unload "$LAUNCH_AGENTS/com.safe-agent-treasury.refill.plist" 2>/dev/null || true
 
   # Process template
   sed \
     -e "s|__NODE_PATH__|$NODE_PATH|g" \
-    -e "s|__REFILL_SCRIPT_PATH__|$SAFE_DIR/safe-refill.mjs|g" \
+    -e "s|__REFILL_SCRIPT_PATH__|$SAFE_DIR/agent-treasury-refill.mjs|g" \
     -e "s|__SAFE_DIR__|$SAFE_DIR|g" \
     -e "s|__HOME__|$HOME|g" \
-    "$SKILL_DIR/templates/com.safe-treasury.refill.plist" > "$LAUNCH_AGENTS/com.safe-treasury.refill.plist"
-  echo "   Installed com.safe-treasury.refill.plist"
+    "$SKILL_DIR/templates/com.safe-agent-treasury.refill.plist" > "$LAUNCH_AGENTS/com.safe-agent-treasury.refill.plist"
+  echo "   Installed com.safe-agent-treasury.refill.plist"
 
   # Load service
-  launchctl load "$LAUNCH_AGENTS/com.safe-treasury.refill.plist" 2>/dev/null
+  launchctl load "$LAUNCH_AGENTS/com.safe-agent-treasury.refill.plist" 2>/dev/null
   echo "   Service loaded"
 
   sleep 2
@@ -67,7 +67,7 @@ if [[ "$(uname)" == "Darwin" ]]; then
   # Health check
   echo ""
   echo "--- Health Check ---"
-  if launchctl list | grep -q "com.safe-treasury.refill"; then
+  if launchctl list | grep -q "com.safe-agent-treasury.refill"; then
     echo "   [OK] Safe refill service (every 6 hours)"
   else
     echo "   [--] Safe refill service not loaded"
@@ -75,7 +75,7 @@ if [[ "$(uname)" == "Darwin" ]]; then
 else
   echo "[3/3] Non-macOS detected. Skipping launchd setup."
   echo "   For Linux, create a systemd unit or cron job:"
-  echo "   */6 * * * * node $SAFE_DIR/safe-refill.mjs >> $SAFE_DIR/data/logs/refill.log 2>&1"
+  echo "   */6 * * * * node $SAFE_DIR/agent-treasury-refill.mjs >> $SAFE_DIR/data/logs/refill.log 2>&1"
 fi
 
 echo ""
@@ -90,9 +90,9 @@ echo "    1. Safe deployed on Base with AllowanceModule enabled"
 echo "    2. SAFE_ADDRESS set in $SAFE_DIR/.env"
 echo "    3. Hot wallet added as delegate with daily limits"
 echo ""
-echo "  Deploy Safe:      node scripts/safe-deploy.mjs --owner 0xYourAddress"
-echo "  Configure module: node scripts/safe-configure.mjs"
-echo "  Manual refill:    node scripts/safe-refill.mjs"
+echo "  Deploy Safe:      node scripts/agent-treasury-deploy.mjs --owner 0xYourAddress"
+echo "  Configure module: node scripts/agent-treasury-configure.mjs"
+echo "  Manual refill:    node scripts/agent-treasury-refill.mjs"
 echo ""
 echo "  See SKILL.md for full setup instructions."
 echo ""

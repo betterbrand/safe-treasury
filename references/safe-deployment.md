@@ -78,13 +78,13 @@ Safe deployed and fully configured on Base mainnet.
 
 ### Lessons Learned
 
-1. **RPC settle delay required.** Public RPC endpoints (BlastAPI) serve stale nonce reads immediately after a transaction confirms. Sequential Safe transactions fail with `GS026` (invalid signature) or `GS013` because the tx hash is computed with a stale nonce. Fix: add 5-second delay between sequential transactions in `safe-configure.mjs`.
+1. **RPC settle delay required.** Public RPC endpoints (BlastAPI) serve stale nonce reads immediately after a transaction confirms. Sequential Safe transactions fail with `GS026` (invalid signature) or `GS013` because the tx hash is computed with a stale nonce. Fix: add 5-second delay between sequential transactions in `agent-treasury-configure.mjs`.
 
 2. **Keychain password file is optional.** The `getPrivateKey()` function was refactored to make the password file optional. If missing, the scripts assume the keychain is already unlocked (e.g., via manual `security unlock-keychain`). This is the preferred approach when running interactively on the agent's Mac Mini.
 
 3. **Keychain config.** The wallet key can be stored in the standard login keychain rather than a dedicated keychain. Set `SAFE_KEYCHAIN_ACCOUNT`, `SAFE_KEYCHAIN_SERVICE`, and `SAFE_KEYCHAIN_DB` in your `.env` to match your keychain setup.
 
-4. **Post-deploy verification can fail.** The `safe-deploy.mjs` script's verification step (`VERSION()` call) can return empty data if the RPC hasn't indexed the new contract yet. The deployment itself succeeds -- the ProxyCreation event is the authoritative confirmation.
+4. **Post-deploy verification can fail.** The `agent-treasury-deploy.mjs` script's verification step (`VERSION()` call) can return empty data if the RPC hasn't indexed the new contract yet. The deployment itself succeeds -- the ProxyCreation event is the authoritative confirmation.
 
 ---
 
@@ -117,14 +117,14 @@ SAFE_RPC=https://...          # Base RPC URL
 ### Step 1: Install deps -- DONE
 
 ```bash
-cd safe-treasury
+cd safe-agent-treasury
 npm install
 ```
 
 ### Step 2: Deploy Safe on Base -- DONE (2026-02-15)
 
 ```bash
-node scripts/safe-deploy.mjs --owner 0xOwnerAddress
+node scripts/agent-treasury-deploy.mjs --owner 0xOwnerAddress
 ```
 
 After deployment:
@@ -135,7 +135,7 @@ After deployment:
 ### Step 3: Configure AllowanceModule -- DONE (2026-02-15)
 
 ```bash
-node scripts/safe-configure.mjs
+node scripts/agent-treasury-configure.mjs
 ```
 
 Executes four Safe transactions:
@@ -154,7 +154,7 @@ Transfer MOR and ETH from current hot wallet to the Safe address:
 ### Step 5: Raise threshold to 2-of-2 -- DONE (2026-02-15, co-signed via Safe Wallet app)
 
 ```bash
-node scripts/safe-propose.mjs threshold --value 2
+node scripts/agent-treasury-propose.mjs threshold --value 2
 ```
 
 Co-sign via Safe Wallet app.
@@ -164,10 +164,10 @@ Co-sign via Safe Wallet app.
 1. Verify Safe is deployed and owns expected funds
 2. Verify AllowanceModule is enabled on Safe
 3. Verify agent is registered as delegate with correct allowances
-4. Run safe-refill.mjs manually -- confirm it pulls MOR within allowance
-5. Run safe-refill.mjs again -- confirm it respects reset interval
+4. Run agent-treasury-refill.mjs manually -- confirm it pulls MOR within allowance
+5. Run agent-treasury-refill.mjs again -- confirm it respects reset interval
 6. Attempt to exceed allowance -- confirm on-chain rejection
-7. Submit a test proposal via safe-propose.mjs -- confirm it appears in Safe Wallet app
+7. Submit a test proposal via agent-treasury-propose.mjs -- confirm it appears in Safe Wallet app
 8. Approve the proposal from the owner's wallet -- confirm execution
 
 ## Contract ABIs Reference
@@ -223,10 +223,10 @@ function createProxyWithNonce(
 
 | File | Status | Purpose |
 |------|--------|---------|
-| `scripts/safe-deploy.mjs` | Complete | Deploy Safe on Base |
-| `scripts/safe-configure.mjs` | Complete | Enable AllowanceModule + set limits |
-| `scripts/safe-refill.mjs` | Complete | Auto-refill hot wallet from Safe |
-| `scripts/safe-propose.mjs` | Complete | Multi-sig transaction proposals |
+| `scripts/agent-treasury-deploy.mjs` | Complete | Deploy Safe on Base |
+| `scripts/agent-treasury-configure.mjs` | Complete | Enable AllowanceModule + set limits |
+| `scripts/agent-treasury-refill.mjs` | Complete | Auto-refill hot wallet from Safe |
+| `scripts/agent-treasury-propose.mjs` | Complete | Multi-sig transaction proposals |
 | `scripts/install.sh` | Complete | Install launchd refill service |
 | `references/safe-deployment.md` | This file | Implementation reference |
 | `~/morpheus/.env` | To update | SAFE_ADDRESS after deployment |

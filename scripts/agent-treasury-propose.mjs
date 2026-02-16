@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * safe-propose.mjs — Propose multi-sig transactions to Safe Transaction Service
+ * agent-treasury-propose.mjs — Propose multi-sig transactions to Safe Transaction Service
  *
  * Creates a Safe transaction, signs it with the agent's key, and submits
  * to the Safe Transaction Service for co-signing via Safe Wallet app.
@@ -13,12 +13,12 @@
  *   confirm   -- Add agent's signature to a pending transaction
  *
  * Usage:
- *   node scripts/safe-propose.mjs transfer --token MOR --to 0x... --amount 100
- *   node scripts/safe-propose.mjs transfer --token ETH --to 0x... --amount 0.5
- *   node scripts/safe-propose.mjs threshold --value 2
- *   node scripts/safe-propose.mjs pending
- *   node scripts/safe-propose.mjs confirm --hash 0x...
- *   node scripts/safe-propose.mjs propose --to 0x... --data 0x... --value 0
+ *   node scripts/agent-treasury-propose.mjs transfer --token MOR --to 0x... --amount 100
+ *   node scripts/agent-treasury-propose.mjs transfer --token ETH --to 0x... --amount 0.5
+ *   node scripts/agent-treasury-propose.mjs threshold --value 2
+ *   node scripts/agent-treasury-propose.mjs pending
+ *   node scripts/agent-treasury-propose.mjs confirm --hash 0x...
+ *   node scripts/agent-treasury-propose.mjs propose --to 0x... --data 0x... --value 0
  *
  * Required in ~/morpheus/.env:
  *   SAFE_ADDRESS=0x...
@@ -416,7 +416,7 @@ async function main() {
 
   if (!command || command === "--help") {
     console.log(`
-Usage: node scripts/safe-propose.mjs <command> [options]
+Usage: node scripts/agent-treasury-propose.mjs <command> [options]
 
 Commands:
   propose    --to 0x... [--data 0x...] [--value 0]   Propose raw transaction

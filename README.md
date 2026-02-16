@@ -1,4 +1,4 @@
-# safe-treasury
+# safe-agent-treasury
 
 Multi-sig treasury management for autonomous AI agents using [Safe Smart Account](https://safe.global) on Base.
 
@@ -10,14 +10,14 @@ Deploy a Safe with AllowanceModule spending limits, multi-sig transaction propos
 npm install
 
 # 1. Deploy Safe (1-of-2 with your wallet + agent hot wallet)
-node scripts/safe-deploy.mjs --owner 0xYourWalletAddress
+node scripts/agent-treasury-deploy.mjs --owner 0xYourWalletAddress
 
 # 2. Configure AllowanceModule + spending limits
 #    (set SAFE_ADDRESS in ~/morpheus/.env first)
-node scripts/safe-configure.mjs
+node scripts/agent-treasury-configure.mjs
 
 # 3. Move funds to Safe, then raise threshold
-node scripts/safe-propose.mjs threshold --value 2
+node scripts/agent-treasury-propose.mjs threshold --value 2
 
 # 4. Install auto-refill daemon (every 6 hours)
 bash scripts/install.sh
@@ -27,10 +27,10 @@ bash scripts/install.sh
 
 | Script | Purpose |
 |--------|---------|
-| `safe-deploy.mjs` | Deploy Safe v1.4.1 on Base with two owners |
-| `safe-configure.mjs` | Enable AllowanceModule, set MOR/ETH daily limits |
-| `safe-propose.mjs` | Multi-sig tx proposals via Safe Transaction Service |
-| `safe-refill.mjs` | Auto-refill hot wallet from Safe (launchd daemon) |
+| `agent-treasury-deploy.mjs` | Deploy Safe v1.4.1 on Base with two owners |
+| `agent-treasury-configure.mjs` | Enable AllowanceModule, set MOR/ETH daily limits |
+| `agent-treasury-propose.mjs` | Multi-sig tx proposals via Safe Transaction Service |
+| `agent-treasury-refill.mjs` | Auto-refill hot wallet from Safe (launchd daemon) |
 | `install.sh` | Install launchd service for auto-refill |
 
 ## Configuration

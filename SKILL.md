@@ -1,8 +1,8 @@
 ---
-name: safe-treasury
+name: safe-agent-treasury
 version: 0.1.0
 description: Multi-sig treasury for autonomous AI agents. Deploy a Safe Smart Account on Base with AllowanceModule spending limits, multi-sig transaction proposals via Safe Transaction Service, and automatic hot wallet refill. On-chain enforcement — the blockchain is the guardrail, not software.
-homepage: https://github.com/betterbrand/safe-treasury
+homepage: https://github.com/betterbrand/safe-agent-treasury
 metadata:
   openclaw:
     requires:
@@ -10,7 +10,7 @@ metadata:
     tags: ["safe", "treasury", "multi-sig", "base", "spending-limits", "allowance", "defi", "wallet"]
 ---
 
-# safe-treasury
+# safe-agent-treasury
 
 Multi-sig treasury management for autonomous AI agents using Safe Smart Account on Base.
 
@@ -58,7 +58,7 @@ The agent's hot wallet is a *delegate* of the Safe, not the owner of the funds. 
 Run the status dashboard before making financial decisions:
 
 ```bash
-node scripts/safe-status.mjs
+node scripts/agent-treasury-status.mjs
 ```
 
 This shows: Safe overview (threshold, owners, module status), balances (Safe + hot wallet), daily allowance usage (spent vs remaining, next reset time), pending multi-sig transactions, and refill daemon health. No private key required -- fully read-only.
@@ -71,7 +71,7 @@ Your hot wallet has a daily allowance from the AllowanceModule:
 - **MOR:** 50 MOR per 24 hours
 - **ETH:** 0.05 ETH per 24 hours
 
-The refill daemon (`safe-refill.mjs`) runs every 6 hours via launchd. When your hot wallet balance drops below threshold (20 MOR / 0.01 ETH), it automatically pulls funds from the Safe using `executeAllowanceTransfer`. No signatures needed -- the delegate calls the module directly.
+The refill daemon (`agent-treasury-refill.mjs`) runs every 6 hours via launchd. When your hot wallet balance drops below threshold (20 MOR / 0.01 ETH), it automatically pulls funds from the Safe using `executeAllowanceTransfer`. No signatures needed -- the delegate calls the module directly.
 
 For routine operations (MOR staking, gas fees), you spend from your hot wallet as normal. The refill daemon keeps it topped up within the daily cap.
 
@@ -81,7 +81,7 @@ If you need to move more than the daily allowance, or perform an admin operation
 
 1. Propose the transaction:
    ```bash
-   node scripts/safe-propose.mjs transfer --token MOR --to 0x... --amount 100
+   node scripts/agent-treasury-propose.mjs transfer --token MOR --to 0x... --amount 100
    ```
 2. This submits to the Safe Transaction Service. The co-signer approves via Safe Wallet app.
 3. Wait for co-signer approval before the transaction executes.
@@ -92,7 +92,7 @@ You cannot bypass this. The 2-of-2 threshold is enforced on-chain.
 
 Good practice at the start of each session:
 
-1. Run `node scripts/safe-status.mjs`
+1. Run `node scripts/agent-treasury-status.mjs`
 2. Verify refill daemon is healthy (loaded, recent log entry)
 3. Check if any pending transactions need attention
 4. Note daily allowance remaining before planning spending
@@ -103,10 +103,10 @@ Good practice at the start of each session:
 
 ```bash
 # Deploy a 1-of-2 Safe with your wallet and the agent hot wallet as owners
-node scripts/safe-deploy.mjs --owner 0xYourPersonalWallet
+node scripts/agent-treasury-deploy.mjs --owner 0xYourPersonalWallet
 
 # Dry run (no transaction, for testing)
-node scripts/safe-deploy.mjs --owner 0xYourAddress --agent 0xAgentAddress --dry-run
+node scripts/agent-treasury-deploy.mjs --owner 0xYourAddress --agent 0xAgentAddress --dry-run
 ```
 
 Options:
@@ -128,7 +128,7 @@ SAFE_ADDRESS=0xYourNewSafeAddress
 ### Step 2: Configure AllowanceModule
 
 ```bash
-node scripts/safe-configure.mjs
+node scripts/agent-treasury-configure.mjs
 ```
 
 This script executes four Safe transactions:
@@ -157,36 +157,36 @@ Transfer MOR and ETH from the hot wallet to the Safe address. Keep a small opera
 ### Step 4: Raise Threshold to 2-of-2
 
 ```bash
-node scripts/safe-propose.mjs threshold --value 2
+node scripts/agent-treasury-propose.mjs threshold --value 2
 ```
 
 After this, all admin operations require both your personal wallet and the agent wallet to co-sign via Safe Wallet app.
 
-## safe-propose.mjs -- Multi-Sig Proposals
+## agent-treasury-propose.mjs -- Multi-Sig Proposals
 
 For operations that exceed the AllowanceModule limits or require owner-level permissions, use the proposal system:
 
 ```bash
 # Propose a token transfer
-node scripts/safe-propose.mjs transfer --token MOR --to 0xRecipient --amount 100
-node scripts/safe-propose.mjs transfer --token ETH --to 0xRecipient --amount 0.5
+node scripts/agent-treasury-propose.mjs transfer --token MOR --to 0xRecipient --amount 100
+node scripts/agent-treasury-propose.mjs transfer --token ETH --to 0xRecipient --amount 0.5
 
 # Propose a threshold change
-node scripts/safe-propose.mjs threshold --value 2
+node scripts/agent-treasury-propose.mjs threshold --value 2
 
 # List pending transactions
-node scripts/safe-propose.mjs pending
+node scripts/agent-treasury-propose.mjs pending
 
 # Add the agent's signature to a pending transaction
-node scripts/safe-propose.mjs confirm --hash 0xSafeTxHash
+node scripts/agent-treasury-propose.mjs confirm --hash 0xSafeTxHash
 
 # Propose a raw transaction (advanced)
-node scripts/safe-propose.mjs propose --to 0xTarget --data 0xCalldata --value 0
+node scripts/agent-treasury-propose.mjs propose --to 0xTarget --data 0xCalldata --value 0
 ```
 
 Proposals are submitted to the Safe Transaction Service (`safe-transaction-base.safe.global`). Co-sign via the [Safe Wallet app](https://app.safe.global).
 
-## safe-refill.mjs -- Auto-Refill Hot Wallet
+## agent-treasury-refill.mjs -- Auto-Refill Hot Wallet
 
 Runs as a launchd periodic job (every 6 hours) to keep the hot wallet funded:
 
@@ -197,7 +197,7 @@ Runs as a launchd periodic job (every 6 hours) to keep the hot wallet funded:
 
 ```bash
 # Manual run
-node scripts/safe-refill.mjs
+node scripts/agent-treasury-refill.mjs
 
 # Install as launchd service (auto-runs every 6 hours)
 bash scripts/install.sh
@@ -265,14 +265,14 @@ This is a separate track to implement after the base Safe deployment is operatio
 
 | Command | Description |
 |---------|-------------|
-| `node scripts/safe-status.mjs` | Dashboard: balances, allowances, pending txs |
-| `node scripts/safe-status.mjs --json` | Machine-readable status output |
-| `node scripts/safe-deploy.mjs --owner 0x...` | Deploy Safe on Base |
-| `node scripts/safe-configure.mjs` | Enable AllowanceModule + set limits |
-| `node scripts/safe-configure.mjs --dry-run` | Preview configuration changes |
-| `node scripts/safe-refill.mjs` | Check + refill hot wallet |
-| `node scripts/safe-propose.mjs pending` | List pending multi-sig txs |
-| `node scripts/safe-propose.mjs transfer --token MOR --to 0x... --amount N` | Propose transfer |
-| `node scripts/safe-propose.mjs threshold --value 2` | Propose threshold change |
-| `node scripts/safe-propose.mjs confirm --hash 0x...` | Co-sign pending tx |
+| `node scripts/agent-treasury-status.mjs` | Dashboard: balances, allowances, pending txs |
+| `node scripts/agent-treasury-status.mjs --json` | Machine-readable status output |
+| `node scripts/agent-treasury-deploy.mjs --owner 0x...` | Deploy Safe on Base |
+| `node scripts/agent-treasury-configure.mjs` | Enable AllowanceModule + set limits |
+| `node scripts/agent-treasury-configure.mjs --dry-run` | Preview configuration changes |
+| `node scripts/agent-treasury-refill.mjs` | Check + refill hot wallet |
+| `node scripts/agent-treasury-propose.mjs pending` | List pending multi-sig txs |
+| `node scripts/agent-treasury-propose.mjs transfer --token MOR --to 0x... --amount N` | Propose transfer |
+| `node scripts/agent-treasury-propose.mjs threshold --value 2` | Propose threshold change |
+| `node scripts/agent-treasury-propose.mjs confirm --hash 0x...` | Co-sign pending tx |
 | `bash scripts/install.sh` | Install launchd refill service |
